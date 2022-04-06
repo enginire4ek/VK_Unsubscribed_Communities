@@ -1,0 +1,30 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.VK_Unsubscribed_Communities" parent="Theme.AppCompat.DayNight">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
+        <item name="android:windowLightStatusBar">@color/black</item>
+        <!-- Customize your theme here. -->
+        <item name="android:actionBarStyle">?attr/colorPrimary</item>
+    </style>
+
+    <style name="PopUpAnimation">
+        <item name="android:windowEnterAnimation">@anim/pop_up_slide_to_bottom</item>
+        <item name="android:windowExitAnimation">@anim/pop_up_slide_out_bottom</item>
+    </style>
+
+<!--    <style name="ShapeAppearanceOverlay_card_custom_corners">-->
+<!--        <item name="cornerFamily">rounded</item>-->
+<!--        <item name="cornerSizeTopRight">15dp</item>-->
+<!--        <item name="cornerSizeTopLeft">15dp</item>-->
+<!--        <item name="cornerSizeBottomRight">0dp</item>-->
+<!--        <item name="cornerSizeBottomLeft">0dp</item>-->
+<!--    </style>-->
+
+<!--    <style name="CustomCardViewStyle" parent="@style/Widget.MaterialComponents.CardView">-->
+<!--        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>-->
+<!--    </style>-->
+
+</resources>
