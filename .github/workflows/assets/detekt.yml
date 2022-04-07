@@ -377,7 +377,7 @@ naming:
     ignoreOverridden: true
     ignoreAnnotated: ['Composable']
   FunctionParameterNaming:
-    active: false
+    active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     parameterPattern: '[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'

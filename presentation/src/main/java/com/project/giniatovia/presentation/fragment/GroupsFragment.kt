@@ -1,6 +1,8 @@
 package com.project.giniatovia.presentation.fragment
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,7 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.project.giniatovia.domain.repositories.Repository
+import com.project.giniatovia.domain.repositories.GroupsRepository
 import com.project.giniatovia.presentation.R
 import com.project.giniatovia.presentation.adapters.GroupAdapter
 import com.project.giniatovia.presentation.base.GroupsContract
@@ -37,17 +39,6 @@ class GroupsFragment : Fragment(), GroupsContract.View {
     private val backgroundProfile get() = _backgroundProfile!!
     private lateinit var popupWindow: PopupWindow
 
-    private lateinit var savedGroups: GroupsListViewData
-    private lateinit var selectedGroups: MutableSet<Long>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            savedGroups = savedInstanceState.getParcelable(GROUPS)!!
-            selectedGroups = savedInstanceState.getLongArray(CHOICE)!!.toMutableSet()
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,17 +54,16 @@ class GroupsFragment : Fragment(), GroupsContract.View {
             GroupsPresenter(
                 arguments?.getLong("user_id") ?: -1,
                 this@GroupsFragment,
-                requireContext().getDependenciesProvider().get(Repository::class)
+                requireContext().getDependenciesProvider().get(GroupsRepository::class)
             )
         )
-        presenter.onAttach()
 
         initBackground()
         initRecyclerView()
 
         if (savedInstanceState != null) {
-            presenter.setUnsubscribeSet(selectedGroups)
-            presenter.setResultList(savedGroups)
+            presenter.setUnsubscribeSet(savedInstanceState.getLongArray(CHOICE)!!.toMutableSet())
+            presenter.restoreResultList()
         } else {
             presenter.setUserId()
         }
@@ -93,22 +83,8 @@ class GroupsFragment : Fragment(), GroupsContract.View {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(
-            GROUPS,
-            GroupsListViewData(
-                presenter.resultList!!.map {
-                    GroupViewData(
-                        id = it.id,
-                        name = it.name,
-                        photo_100 = it.photo_100,
-                        members_count = it.members_count,
-                        description = it.description,
-                        checked = presenter.unsubCollection.contains(it.id)
-                    )
-                }
-            )
-        )
         outState.putLongArray(CHOICE, presenter.unsubCollection.toLongArray())
+        presenter.saveGroups()
     }
 
     private fun initBackground() {
@@ -134,11 +110,6 @@ class GroupsFragment : Fragment(), GroupsContract.View {
             animationStyle = R.style.PopUpAnimation
             darkenBackground()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        presenter.onDetach()
     }
 
     override fun initRecyclerView() {
@@ -214,6 +185,14 @@ class GroupsFragment : Fragment(), GroupsContract.View {
                 popupWindow.dismiss()
                 lightenBackground()
             }
+            findViewById<AppCompatButton>(R.id.pop_up_enterButton).setOnClickListener {
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("vkontakte://profile/${-group.id}")
+                    )
+                )
+            }
         }
     }
 
@@ -244,14 +223,13 @@ class GroupsFragment : Fragment(), GroupsContract.View {
         const val COLUMNS_LANDSCAPE = 5
         const val NO_BORDER = 0.0f
         const val BORDER = 5.0f
-        const val GROUPS = "GROUPS_LIST"
         const val CHOICE = "CHOICE"
 
         @JvmStatic
-        fun newInstance(user_id: Long) =
+        fun newInstance(userId: Long) =
             GroupsFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("user_id", user_id)
+                    putLong("user_id", userId)
                 }
             }
     }

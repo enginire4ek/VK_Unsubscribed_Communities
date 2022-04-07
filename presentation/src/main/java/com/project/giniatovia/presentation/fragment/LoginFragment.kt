@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.project.giniatovia.presentation.R
 import com.project.giniatovia.presentation.base.LoginContract
-import com.project.giniatovia.presentation.presenter.LoginPresenter
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.auth.VKAuthenticationResult
 import com.vk.api.sdk.auth.VKScope
@@ -45,9 +44,6 @@ class LoginFragment : Fragment(), LoginContract.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setPresenter(LoginPresenter(this@LoginFragment))
-        presenter.onAttach()
-
         configSettings()
 
         view.findViewById<Button>(R.id.enterButton).setOnClickListener {
@@ -66,15 +62,10 @@ class LoginFragment : Fragment(), LoginContract.View {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        presenter.onDetach()
-    }
-
     private fun authLaunch() = authLauncher.launch(arrayListOf(VKScope.GROUPS))
 
     private fun onSuccess(result: VKAuthenticationResult.Success) {
-        val fragment = GroupsFragment.newInstance(user_id = result.token.userId.value)
+        val fragment = GroupsFragment.newInstance(userId = result.token.userId.value)
         requireActivity().supportFragmentManager.commit {
             replace(R.id.container, fragment)
         }

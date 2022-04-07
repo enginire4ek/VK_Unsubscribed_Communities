@@ -8,16 +8,25 @@ import com.project.giniatovia.data.models.GroupInfo
 import com.project.giniatovia.domain.common.Result
 import com.project.giniatovia.domain.entities.BusinessGroupInfo
 import com.project.giniatovia.domain.interfaces.ResultCallback
-import com.project.giniatovia.domain.repositories.Repository
+import com.project.giniatovia.domain.repositories.GroupsRepository
 import com.project.giniatovia.domain.repositories.ResultList
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 
-class RepositoryImpl : Repository {
+class GroupsRepositoryImpl : GroupsRepository {
+    override val groupsCollection: ResultList
+        get() = _groupsCollection!!
+    private var _groupsCollection: ResultList? = null
 
-    override fun getGroups(user_id: Long, callback: ResultCallback<ResultList>) {
+    override fun saveGroupsCollection(groups: ResultList) {
+        _groupsCollection = groups
+    }
+
+    override fun restoreGroupsCollection() = groupsCollection
+
+    override fun getGroups(userId: Long, callback: ResultCallback<ResultList>) {
         VK.execute(
-            VKGetGroupsCommand(user_id),
+            VKGetGroupsCommand(userId),
             object : VKApiCallback<List<GroupInfo>> {
 
                 override fun success(result: List<GroupInfo>) {
@@ -43,9 +52,9 @@ class RepositoryImpl : Repository {
         )
     }
 
-    override fun leaveGroup(group_id: Long, callback: ResultCallback<Int>) {
+    override fun leaveGroup(groupId: Long, callback: ResultCallback<Int>) {
         VK.execute(
-            VKLeaveGroupCommand(group_id),
+            VKLeaveGroupCommand(groupId),
             object : VKApiCallback<Int> {
 
                 override fun success(result: Int) {
@@ -59,9 +68,9 @@ class RepositoryImpl : Repository {
         )
     }
 
-    override fun getFriendCount(group_id: Long, callback: ResultCallback<Int>) {
+    override fun getFriendCount(groupId: Long, callback: ResultCallback<Int>) {
         VK.execute(
-            VKGetMembersCommand(group_id),
+            VKGetMembersCommand(groupId),
             object : VKApiCallback<Int> {
 
                 override fun success(result: Int) {
@@ -75,9 +84,9 @@ class RepositoryImpl : Repository {
         )
     }
 
-    override fun getLastPostDate(owner_id: Long, callback: ResultCallback<String>) {
+    override fun getLastPostDate(ownerId: Long, callback: ResultCallback<String>) {
         VK.execute(
-            VKGetLastPostDateCommand(owner_id),
+            VKGetLastPostDateCommand(ownerId),
             object : VKApiCallback<String> {
 
                 override fun success(result: String) {

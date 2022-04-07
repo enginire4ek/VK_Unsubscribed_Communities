@@ -6,18 +6,20 @@ import com.project.giniatovia.presentation.models.GroupsListViewData
 
 interface GroupsContract {
     // no view android
-    interface Presenter : BasePresenter {
+    interface Presenter {
         // связывание с domain-логикой
         val unsubCollection: MutableSet<Long>
         val resultList: ResultList?
 
         fun setUserId()
-        fun setResultList(groupsList: GroupsListViewData)
+        fun restoreResultList()
         fun setUnsubscribeSet(set: MutableSet<Long>)
         fun onGroupLongClick(group: GroupViewData)
         fun onGroupClick(group: GroupViewData)
         fun onUnsubscribe()
         fun onRefresh()
+        fun saveGroups()
+        fun restoreGroups()
     }
 
     interface View : BaseView<Presenter> {

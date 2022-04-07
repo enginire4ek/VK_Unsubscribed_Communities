@@ -2,6 +2,7 @@ package com.project.giniatovia.presentation.adapters
 
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.drawee.generic.RoundingParams
 import com.facebook.drawee.view.SimpleDraweeView
@@ -44,13 +46,16 @@ class GroupAdapter : RecyclerView.Adapter<GroupAdapter.GroupViewHolder>() {
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
         holder.bind(groups.groupsList[position])
+        Log.d("TAG", "$position ${groups.groupsList[position].name}")
     }
 
     override fun getItemCount() = groups.groupsList.size
 
     fun updateList(groupsList: GroupsListViewData) {
+        val groupsDiffUtilCallback = GroupsDiffUtilCallback(groups, groupsList)
+        val groupsDiffResult = DiffUtil.calculateDiff(groupsDiffUtilCallback)
         groups = groupsList
-        notifyDataSetChanged()
+        groupsDiffResult.dispatchUpdatesTo(this)
     }
 
     inner class GroupViewHolder(itemView: View) :

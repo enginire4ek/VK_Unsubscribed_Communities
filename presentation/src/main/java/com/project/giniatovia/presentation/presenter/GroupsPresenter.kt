@@ -2,21 +2,18 @@ package com.project.giniatovia.presentation.presenter
 
 import android.util.Log
 import com.project.giniatovia.domain.common.Result
-import com.project.giniatovia.domain.entities.BusinessGroupInfo
 import com.project.giniatovia.domain.interfaces.ResultCallback
-import com.project.giniatovia.domain.repositories.Repository
+import com.project.giniatovia.domain.repositories.GroupsRepository
 import com.project.giniatovia.domain.repositories.ResultList
 import com.project.giniatovia.presentation.base.GroupsContract
 import com.project.giniatovia.presentation.models.GroupViewData
 import com.project.giniatovia.presentation.models.GroupsListViewData
 
 class GroupsPresenter(
-    private val user_id: Long,
+    private val userId: Long,
     private val view: GroupsContract.View,
-    private val repository: Repository
+    private val repository: GroupsRepository
 ) : GroupsContract.Presenter {
-
-    private var mView: GroupsContract.View? = null
 
     override var unsubCollection = mutableSetOf<Long>()
     override var resultList: ResultList? = null
@@ -52,7 +49,7 @@ class GroupsPresenter(
             return
         }
         repository.getGroups(
-            user_id,
+            userId,
             object : ResultCallback<ResultList> {
 
                 override fun onResult(result: Result.Success<ResultList>) {
@@ -103,6 +100,14 @@ class GroupsPresenter(
         this@GroupsPresenter.getVKGroups()
     }
 
+    override fun saveGroups() {
+        repository.saveGroupsCollection(resultList!!)
+    }
+
+    override fun restoreGroups() {
+        resultList = repository.restoreGroupsCollection()
+    }
+
     private fun onDataIsReady(group: GroupViewData) {
         val friendsCount = map[group.id]?.first
         val dateString = map[group.id]?.second
@@ -119,16 +124,8 @@ class GroupsPresenter(
         this.getVKGroups()
     }
 
-    override fun setResultList(groupsList: GroupsListViewData) {
-        resultList = groupsList.groupsList.map {
-            BusinessGroupInfo(
-                id = it.id,
-                name = it.name,
-                photo_100 = it.photo_100,
-                members_count = it.members_count,
-                description = it.description
-            )
-        }
+    override fun restoreResultList() {
+        restoreGroups()
         mapToGroupViewData()
     }
 
@@ -188,13 +185,5 @@ class GroupsPresenter(
                 }
             }
         )
-    }
-
-    override fun onAttach() {
-        this.mView = view
-    }
-
-    override fun onDetach() {
-        this.mView = null
     }
 }

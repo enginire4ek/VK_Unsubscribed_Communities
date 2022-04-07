@@ -3,7 +3,7 @@ package com.project.giniatovia.presentation.base
 import com.vk.api.sdk.exceptions.VKAuthException
 
 interface LoginContract {
-    interface Presenter : BasePresenter
+    interface Presenter
 
     interface View : BaseView<Presenter> {
         fun onLogin()
